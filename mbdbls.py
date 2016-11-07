@@ -165,7 +165,7 @@ def extern_run(backup_path,iterator_callback):
 def dict_one_fileinfo(info):
     dict = {}
     key_list = ['domain','filename','fileID','mode']
-    mode_result = info['mode'] & 0xE000
+#    mode_result = info['mode'] & 0xE000
 #    if mode_result == 0xA000: type = 'l' # symlink
 #    elif mode_result: type = 'f' # file
 #    elif mode_result: type = 'd' # dir

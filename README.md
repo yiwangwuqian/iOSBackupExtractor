@@ -15,8 +15,8 @@ please input index: 0
 please set output dir path:  
 
 Note:  
-1)输入内容为`|`前的数字  
-2)第一次的输入是选择备份文件;第二次的输入是选择app的bundle id;第三次输入是设置输出文件夹  
+1)第一二次输入内容为`|`前的数字.第一次的输入是选择备份文件;第二次的输入是选择app的bundle id  
+2)第三次输入是设置输出文件夹  
 
 引用:  
 mbdbls
