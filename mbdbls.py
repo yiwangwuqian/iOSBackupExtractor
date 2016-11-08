@@ -12,6 +12,7 @@
 import sys
 import hashlib
 import argparse
+import os
 from time import strftime, localtime, gmtime
 
 parser = argparse.ArgumentParser(description='Parse Manifest.mbdb files from iTunes backup directories')
@@ -158,7 +159,9 @@ def extern_run(backup_path,iterator_callback):
     if iterator_callback == None:
         return
     
-    mbdb = process_mbdb_file(backup_path)
+    backup_file_path = os.path.join(backup_path,
+                                'Manifest.mbdb')
+    mbdb = process_mbdb_file(backup_file_path)
     for offset in sorted(sorting, key=sorting.get, reverse=args.r):
         iterator_callback(dict_one_fileinfo(mbdb[offset]))
 

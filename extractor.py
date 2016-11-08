@@ -43,9 +43,20 @@ APP_DOMAIN_PREFIX = 'AppDomain-'
 
 class AppExtractor(Extractor):
 
+    '''iOS9 differ with iOS10'''
+    def backup_file_path(self,fileID):
+        path = None
+        if self.os_version[:2] == '10':
+            middle_appended_path = os.path.join(self.backup_base_path, fileID[:2])
+            path = os.path.join(middle_appended_path, fileID) 
+        else:
+            path = os.path.join(self.backup_base_path, fileID)
+        return path
+
     def start_extract(self, *args, **kwargs):
         self.backup_base_path = args[0]
         self.extract_bundleid = args[1]
+        self.os_version = kwargs.get('os_version','')
         self.output_dir = kwargs.get('output_dir', current_dir)
         self.done_callback = kwargs.get('done_callback', None)
         self.app_extract()
@@ -58,23 +69,26 @@ class AppExtractor(Extractor):
 
         if domain.find(APP_DOMAIN_PREFIX) == 0:
             a_bundle_id = domain[len(APP_DOMAIN_PREFIX):]
-            file_path = os.path.join(self.backup_base_path, fileID)
+            file_path = self.backup_file_path(fileID)
             if (a_bundle_id == self.extract_bundleid) and (os.path.exists(file_path) == True):
                 new_file_name = os.path.join(os.path.join(
                     self.output_dir, a_bundle_id), filename)
                 move_file(file_path, new_file_name)
 
     def app_extract(self):
-        mbdbls.extern_run(os.path.join(self.backup_base_path,
-                                       'Manifest.mbdb'), self.app_extract_ergodic)
+        if self.os_version[:2] == '10':
+            extern_extract_func = manifest_db.extern_run
+        else:
+            extern_extract_func = mbdbls.extern_run
+
+        extern_extract_func(self.backup_base_path, self.app_extract_ergodic)
         if self.done_callback != None:
             self.done_callback()
 
 '''By main execute about'''
 
 
-def device_select_input_interaction():
-    device_list = backup_device_info.backup_dir_device_list()
+def device_select_input_interaction(device_list):
     device_select_show_text = '------device names------\n'
     for i in range(0, len(device_list)):
         device = device_list[i]
@@ -88,8 +102,7 @@ def device_select_input_interaction():
             print "please input valid index!"
             return None
         else:
-            selected_dir_path = device_list[int(input_device)][0]
-            return selected_dir_path
+            return int(input_device)
     else:
         print "please input integer!"
         return None
@@ -116,6 +129,9 @@ def bundleid_select_input_interaction(list):
 
 def output_dir_input_interaction():
     input_path = raw_input("please set output dir path: ")
+    if input_path and not os.path.exists(input_path) and not os.path.isfile(input_path):
+        input_path += '/'
+
     if input_path and os.path.exists(input_path) and os.path.isdir(input_path):
         return input_path
     else:
@@ -127,7 +143,10 @@ def extract_done_callback(*args):
     print 'extract is done'
 
 if __name__ == '__main__':
-    selected_dir_path = device_select_input_interaction()
+    device_list = backup_device_info.backup_dir_device_list()
+    selected_device_index =  device_select_input_interaction(device_list)        
+    selected_dir_path = device_list[selected_device_index][0]
+    selected_device_version = device_list[selected_device_index][1][1]
     if selected_dir_path != None:
         bundleid_list = backup_device_info.device_installed_app_list(selected_dir_path)
         once_selected_bundleid = bundleid_select_input_interaction(bundleid_list)
@@ -135,4 +154,5 @@ if __name__ == '__main__':
             output_dir = output_dir_input_interaction()
             if output_dir != None:
                 extractor = AppExtractor()
-                extractor.start_extract(selected_dir_path, once_selected_bundleid, done_callback=extract_done_callback, output_dir=output_dir)
+                kw_params = {'done_callback' : extract_done_callback,'output_dir' :output_dir, 'os_version' : selected_device_version}
+                extractor.start_extract(selected_dir_path, once_selected_bundleid, **kw_params)

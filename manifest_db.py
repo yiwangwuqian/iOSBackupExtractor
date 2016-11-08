@@ -22,7 +22,6 @@ def get_files_info(backup_base_path,iterator_callback):
         info['filename'] = relativePath
         if flags == 1:
             info['type'] = 'f' #file
-            print info['fileID']
         elif flags ==2:
             info['type'] = 'd' #dir
         else:
@@ -34,7 +33,7 @@ def get_files_info(backup_base_path,iterator_callback):
 def extern_run(backup_path, iterator_callback):
     if iterator_callback == None:
         return
-    info_list = get_files_info(backup_path)
+    info_list = get_files_info(backup_path,iterator_callback)
     for i in range(0,len(info_list)):
         iterator_callback(info_list[i])
 
