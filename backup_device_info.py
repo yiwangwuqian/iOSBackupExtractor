@@ -8,6 +8,7 @@ import getpass
 import plistlib
 
 device_name_key = 'Device Name'
+device_os_version_key = 'Product Version'
 
 backup_path = '/Users/%s/Library/Application Support/MobileSync/Backup'%getpass.getuser()
 
@@ -19,7 +20,7 @@ def backup_dir_ls():
     return names
 
 def device_ls(dir_list):
-    device_names = []
+    device_infos = []
     for dir_name in dir_list:
         upper_dir = os.path.join(backup_path,dir_name)
         path = os.path.join(upper_dir,'Info.plist')
@@ -34,17 +35,18 @@ def device_ls(dir_list):
 #            continue
         dict = plistlib.readPlist(path)
         a_device_name = dict.get(device_name_key,None)
+        a_device_version = dict.get(device_os_version_key,'')
         if a_device_name != None:
-            device_names.append(a_device_name)
-    return device_names
+            device_infos.append((a_device_name,a_device_version))
+    return device_infos
 
 def backup_dir_device_list():
     backup_dir_list = backup_dir_ls()
-    device_name_list = device_ls(backup_dir_list)
+    device_info_list = device_ls(backup_dir_list)
     info_list = []
     if len(backup_dir_list) >0:
         for i in range(0,len(backup_dir_list)):
-            info_list.append((os.path.join(backup_path,backup_dir_list[i]),device_name_list[i]))
+            info_list.append((os.path.join(backup_path,backup_dir_list[i]),device_info_list[i]))
     return info_list
 
 def device_installed_app_list(one_backup_path):

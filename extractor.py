@@ -6,10 +6,12 @@
 
 __VERSION__ = 0.1
 
-import mbdbls
 import sys
 import os
 import shutil
+
+import mbdbls
+import manifest_db
 import backup_device_info
 
 current_dir = os.path.split(os.path.abspath(__file__))[0]
@@ -44,7 +46,7 @@ class AppExtractor(Extractor):
     def start_extract(self, *args, **kwargs):
         self.backup_base_path = args[0]
         self.extract_bundleid = args[1]
-        self.output_dir = kwargs.get('upper_dir', current_dir)
+        self.output_dir = kwargs.get('output_dir', current_dir)
         self.done_callback = kwargs.get('done_callback', None)
         self.app_extract()
 
@@ -76,8 +78,9 @@ def device_select_input_interaction():
     device_select_show_text = '------device names------\n'
     for i in range(0, len(device_list)):
         device = device_list[i]
+        a_device_name = device[1][0]
         device_select_show_text += '%d| %s' % (i,
-                                               unicode(device[1]).encode('utf-8') + '\n')
+                                               a_device_name.encode('utf-8') + '\n')
     device_select_show_text += "please input index: "
     input_device = raw_input(device_select_show_text)
     if input_device.isdigit():
