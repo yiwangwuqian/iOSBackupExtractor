@@ -165,13 +165,13 @@ def extern_run(backup_path,iterator_callback):
 def dict_one_fileinfo(info):
     dict = {}
     key_list = ['domain','filename','fileID','mode']
-#    mode_result = info['mode'] & 0xE000
-#    if mode_result == 0xA000: type = 'l' # symlink
-#    elif mode_result: type = 'f' # file
-#    elif mode_result: type = 'd' # dir
-#    else:
-#        type = '?' # unknown
-#    dict['type'] = type
+    mode_result = info['mode'] & 0xF000
+    if mode_result == 0xA000: type = 'l' # symlink
+    elif mode_result == 0x8000: type = 'f' # file
+    elif mode_result == 0x4000: type = 'd' # dir
+    else:
+        type = '?' # unknown
+    dict['type'] = type
 
     for key in key_list:
         dict[key] = info.get(key,'')
