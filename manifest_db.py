@@ -7,7 +7,7 @@ import os
 import sqlite3
 import hashlib
 
-def get_files_info(backup_base_path,iterator_callback):
+def get_files_info(backup_base_path,iterator_callback=None):
     sql = "SELECT * FROM Files"
     db_path = os.path.join(backup_base_path, 'Manifest.db')
     connect = sqlite3.connect(db_path)
@@ -33,7 +33,7 @@ def get_files_info(backup_base_path,iterator_callback):
 def extern_run(backup_path, iterator_callback):
     if iterator_callback == None:
         return
-    info_list = get_files_info(backup_path,iterator_callback)
+    info_list = get_files_info(backup_path)
     for i in range(0,len(info_list)):
         iterator_callback(info_list[i])
 
