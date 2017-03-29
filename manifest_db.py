@@ -17,7 +17,9 @@ def get_files_info(backup_base_path,iterator_callback=None):
         relativePath = row[2]
         flags = row[3]
         info = {}
-        info['fileID'] = hashlib.sha1(domain +'-'+ relativePath).hexdigest()
+        sha1_path = unicode(domain +'-') + relativePath
+        info['fileID'] = hashlib.sha1(sha1_path).hexdigest()
+        print info['fileID']
         info['domain'] = domain
         info['filename'] = relativePath
         if flags == 1:
